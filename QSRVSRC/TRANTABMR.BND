@@ -1,0 +1,118 @@
+000100190720     /* --- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+000200190822     /* Application     CICS Management                                       */
+000300190822     /* Source Member   TRANTABMR                                             */
+000301190822     /* Member Type     ILE Binder Language = BND                             */
+000500190822     /* Description     CICS Transaction Table - Maintenance Service          */
+000600190720     /* --- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+000601190822     /* Created         07/22/2019                                            */
+000800190720     /* Author          LNAPIER                                               */
+000900190720     /* --- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+001000190720     /* The ## tags below are used by a CL to create the service program.     */
+001100190720     /* Do not modify the column positions of these lines or the data         */
+001200190720     /* position and 'width' of the values.                                   */
+001300190720     /*                                                                       */
+003500190720     /* The following command is an example of how to create the              */
+003600190720     /* service program.                                                      */
+003700190720     /*                                                                       */
+003800190822     /*      CRTSRVPGM  SRVPGM(&PGMLIB/TRANTABMR) +                           */
+003801190822     /*                 MODULE(*SRVPGM) +                                     */
+004200190720     /*                 SRCFILE(&SRCLIB/QSRVSRC) +                            */
+004300190822     /*                 SRCMBR(*SRVPGM) +                                     */
+004400190720     /*                 TEXT(&MBRTEXT) +                                      */
+004500190720     /*                 BNDDIR(*NONE) BNDSRVPGM(*NONE) +                      */
+004600190720     /*                 ACTGRP(*CALLER) +                                     */
+004700190720     /*                 ALWUPD(*YES) ALWLIBUPD(*NO) ALWRINZ(*NO) +            */
+004800190720     /*                 USRPRF(*USER)                                         */
+004900190720     /*                                                                       */
+005000190720     /* Note: Modifications that add/alter the export list or parameters      */
+005100190720     /*       to an service program interface, defined by this export list    */
+005200190720     /*       should be done in a very specific way, to ensure that minimal   */
+005300190720     /*       incompatibility issue do not occur with current existing        */
+005400190720     /*       programs in production that are already using a previous        */
+005500190720     /*       version of the service program. If you need more information    */
+005600190720     /*       refer to the binding language examples found in the IBM         */
+005700190720     /*       manual "ILE Concepts".                                          */
+005800190720     /*                                                                       */
+005900190720     /* To keep from having to recompile a program that uses a service        */
+006000190720     /* program which has been modified, here are a couple of example         */
+006100190720     /* guidelines to observe...                                              */
+006200190720     /*                                                                       */
+006300190720     /* If you add a new procedure:                                           */
+006400190720     /*    1. Duplicate the current block                                     */
+006500190720     /*    2. Change the 2nd copy from *CURRENT to *PRV                       */
+006600190720     /*    3. Add new export declaration for the procedure at the end         */
+006700190720     /*         of any existing export declarations in *CURRENT's list.       */
+006800190720     /*         This ensures existing programs can continue to complete       */
+006900190720     /*         a bind to the new service program as done with the            */
+007000190720     /*         previous version of the service program's interface.          */
+007100190720     /*    4. Update signature version.                                       */
+007200190720     /*                                                                       */
+007300190720     /* If you add a new parameter:                                           */
+007400190720     /*    1. Duplicate the current block.                                    */
+007500190720     /*    2. Change the 2nd copy from *CURRENT to *PRV.                      */
+007600190720     /*    3. Rename original procedure in the binding language export        */
+007700190720     /*         being sure to leave the export line in the same relative      */
+007800190720     /*         position to any already existing export declarations.         */
+007900190720     /*         This ensures existing programs can continue to complete       */
+008000190720     /*         a bind to the new service program as done with the            */
+008100190720     /*         previous version of the service program's interface.          */
+008200190720     /*    4. Add new export declaration for a new procedure at the end       */
+008300190720     /*         of any existing export declarations in *CURRENT's list.       */
+008400190720     /*         This new export declaration uses the original procedure       */
+008500190720     /*         name and relates to the procedure that will have the new      */
+008600190720     /*         parameter.                                                    */
+008700190720     /*    5. Add new parameter and logic to orignal procedure. Try to        */
+008800190720     /*         make the new parameter with options *OMIT or *NOPASS.         */
+008900190720     /*    6. Create new procedure with name given at step 3. Depending       */
+009000190720     /*           passing option used, call the updated procedure at          */
+009100190720     /*           step 5. If *NOPASS, call with same paramter list. If        */
+009200190720     /*           *OMIT, call with same parameter list plus *OMIT for new     */
+009300190720     /*           parameter. Otherwise, if a default value can be passed,     */
+009400190720     /*           call with same parameter list plus default value. If        */
+009500190720     /*           none of the options above fit a scenario, this procedure    */
+009600190720     /*           should be a replica of the original procedure prior to      */
+009700190720     /*           modifications made at step 5.                               */
+009800190720     /*    7. Update signature version.                                       */
+009900190720     /*                                                                       */
+010000190720     /* Argument legend:                                                      */
+010100190720     /*   c       = read-only reference                                       */
+010200190720     /*   r       = reference                                                 */
+010300190720     /*   v       = value                                                     */
+010400190720     /*                                                                       */
+010500190720     /*   i       = indicator character                                       */
+010600190720     /*   s(n)    = string-fixed of n-characters                              */
+010700190720     /*   sv      = string-varying type                                       */
+010800190720     /*   s(0)    = string-null terminated                                    */
+010900190720     /*   sV(m)   = string-*varsize of maximum m-characters                   */
+011000190720     /*   nP(o,d) = number-packed of o-ordinal digits and d-decimal digits    */
+011100190720     /*   nB(o,d) = number-binary of o-ordinal digits and d-decimal digits    */
+011200190720     /*   nZ(o,d) = number-zoned  of o-ordinal digits and d-decimal digits    */
+011300190720     /*   d       = date field                                                */
+011400190720     /*   t       = time field                                                */
+011500190720     /*   z       = datetimestamp field                                       */
+011600190720     /*   *       = pointer based                                             */
+011700190720     /*                                                                       */
+011800190720     /*   !       = required (neither *OMIT, nor *NOPASS)                     */
+011900190720     /*   o       = omitable (*OMIT)                                          */
+012000190720     /*   ?       = optional (*NOPASS)                                        */
+012100190720     /*   +       = omitable and optional (*OMIT:*NOPASS)                     */
+012200190720     /*                                                                       */
+012300190720     /*   void    = no return value                                           */
+012400190720     /*                                                                       */
+012500190720     /*          M O D I F I C A T I O N    T A B L E                         */
+012600190720     /*  Date        By          Description                                  */
+012700190822     /*  07/22/2019  LNAPIER     version 'Version.01.00.00' created.          */
+012800190720     /*                                                                       */
+012900190720     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+013000190720
+013100190822             /*  Version.01.01.01 -  date stamp 7/22/2019                     */
+013200190822             STRPGMEXP  PGMLVL(*CURRENT) LVLCHK(*YES) +
+013300190822                          SIGNATURE('Version.01.00.00')
+013400020205
+013500190822             EXPORT     SYMBOL(TRANTABMR)    /* Return : void     */
+013600040204                         /* Arg : 1 : r, s(10)     : ! : mode     */
+013900190822                         /* Arg : 2 : r, s(4)      : ! : tranID   */
+013901190822                         /* Arg : 3 : r, s(8)      : ! : groupID  */
+014000031001
+014100020205             ENDPGMEXP
+014200030319
